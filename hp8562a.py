@@ -22,14 +22,20 @@ def _bytes(s):
 
 
 def scan(board=0):
-    """Return the list of primary addresses with a listener present."""
+    """Return the list of primary addresses (1-30) with a listener present.
+
+    The NI USB adapters report "no listeners" (ENOL) as an error instead of
+    returning False, both for an empty address and when no device at all is
+    handshaking on the bus; treat that as "not present".
+    """
     found = []
-    for pad in range(0, 31):
+    for pad in range(1, 31):
         try:
             if gpib.listener(board, pad):
                 found.append(pad)
-        except gpib.GpibError:
-            pass
+        except gpib.GpibError as e:
+            if "no listeners" not in str(e):
+                raise
     return found
 
 
@@ -176,8 +182,12 @@ def main():
 
     if args.scan:
         found = scan(args.board)
-        print("Listeners at addresses:", found if found else "none")
-        return 0 if found else 1
+        if found:
+            print("Listeners at addresses:", found)
+            return 0
+        print("No listeners found. If every address fails, no device is handshaking on the bus:")
+        print("check the instrument is powered on and the GPIB cable is seated at both ends.")
+        return 1
 
     with HP8562A(args.board, args.pad) as sa:
         if args.cmd:
