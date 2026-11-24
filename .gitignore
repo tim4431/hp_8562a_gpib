@@ -1,0 +1,19 @@
+# kernel module build artifacts
+*.o
+*.ko
+*.ko.zst
+*.mod
+*.mod.c
+*.cmd
+.*.cmd
+.module-common.o
+Module.symvers
+modules.order
+.tmp_versions/
+
+# python
+__pycache__/
+*.pyc
+
+# data
+*.csv

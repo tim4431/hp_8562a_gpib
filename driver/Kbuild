@@ -1,0 +1,3 @@
+# Out-of-tree build of the mainline Linux GPIB core + NI USB driver (from kernel v7.0 drivers/gpib)
+subdir-ccflags-y += -I$(src)/include
+obj-m += common/ ni_usb/
