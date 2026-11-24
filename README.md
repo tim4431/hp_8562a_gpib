@@ -3,6 +3,10 @@
 Control an **HP 8562A spectrum analyzer** from Linux through a **National Instruments GPIB-USB-HS** adapter,
 using the open-source [linux-gpib](https://linux-gpib.sourceforge.io/) stack.
 
+> **Remove the HP 85620A Mass Memory Module first (with the analyzer off).** With it attached, our analyzer
+> (firmware 870312) restarted on every GPIB command. The module needs 8562A firmware 870728 or later.
+> See [docs/gpib-crash-85620a.md](docs/gpib-crash-85620a.md) for the evidence and Windows setup notes.
+
 Developed on: Ubuntu 26.04, kernel 7.0.0-42-generic, NI GPIB-USB-HS (USB `3923:709b`).
 
 ## Why a driver build is needed
@@ -55,6 +59,10 @@ with HP8562A(board=0, pad=18) as sa:
     freqs, levels = sa.trace("A")
     print(sa.peak())
 ```
+
+Call `single_sweep()` before `trace()` or `peak()`; without a fresh sweep the trace can be blank (-100 dBm).
+
+`win_gpib_diag.py` tests what makes the analyzer restart, from Windows with NI-488.2.
 
 The instrument's HP-IB address is shown on the analyzer under **CONFIG → HP-IB ADRS**.
 
